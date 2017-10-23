@@ -103,6 +103,39 @@ impl<T> ByAddress<T> where T: ?Sized + Deref {
     fn addr(&self) -> *const T::Target { &*self.0 }
 }
 
+/// Raw pointer equality
+impl<T> PartialEq for ByAddress<T> where T: ?Sized + Deref {
+    fn eq(&self, other: &Self) -> bool {
+        self.addr() == other.addr()
+    }
+}
+impl<T> Eq for ByAddress<T> where T: ?Sized + Deref {}
+
+/// Raw pointer ordering
+impl<T> Ord for ByAddress<T> where T: ?Sized + Deref {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.addr().cmp(&other.addr())
+    }
+}
+
+/// Raw pointer comparison
+impl<T> PartialOrd for ByAddress<T> where T: ?Sized + Deref {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.addr().cmp(&other.addr()))
+    }
+}
+
+/// Raw pointer hashing
+impl<T> Hash for ByAddress<T> where T: ?Sized + Deref {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        // FIXME: For fat pointers to dynamically-sized types, this discards the extra data (vtable
+        // pointer or length), so it may have a high collision rate in certain cases.
+        (self.addr() as *const ()).hash(state)
+    }
+}
+
+// Generic conversion traits:
+
 impl<T> Deref for ByAddress<T> where T: ?Sized + Deref {
     type Target = T;
 
@@ -119,32 +152,4 @@ impl<T, U> AsRef<U> for ByAddress<T> where T: ?Sized + Deref + AsRef<U> {
 
 impl<T, U> AsMut<U> for ByAddress<T> where T: ?Sized + Deref + AsMut<U> {
     fn as_mut(&mut self) -> &mut U { self.0.as_mut() }
-}
-
-impl<T> Hash for ByAddress<T> where T: ?Sized + Deref {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        // FIXME: For fat pointers to dynamically-sized types, this discards the extra data (vtable
-        // pointer or length), so it may have a high collision rate in certain cases.
-        (self.addr() as *const ()).hash(state)
-    }
-}
-
-impl<T> PartialEq for ByAddress<T> where T: ?Sized + Deref {
-    fn eq(&self, other: &Self) -> bool {
-        self.addr() == other.addr()
-    }
-}
-
-impl<T> Eq for ByAddress<T> where T: ?Sized + Deref {}
-
-impl<T> Ord for ByAddress<T> where T: ?Sized + Deref {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.addr().cmp(&other.addr())
-    }
-}
-
-impl<T> PartialOrd for ByAddress<T> where T: ?Sized + Deref {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.addr().cmp(&other.addr()))
-    }
 }
