@@ -33,10 +33,11 @@
 //! # use by_address::ByAddress;
 //! # use std::collections::HashSet;
 //! #
+//! /// Call each item in `callbacks`, skipping any duplicate references.
 //! fn call_each_once(callbacks: &[&Fn()]) {
 //!     let mut seen: HashSet<ByAddress<&Fn()>> = HashSet::new();
 //!     for &f in callbacks {
-//!         if !seen.insert(ByAddress(f)) {
+//!         if seen.insert(ByAddress(f)) {
 //!             f();
 //!         }
 //!     }
