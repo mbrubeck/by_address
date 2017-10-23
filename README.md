@@ -27,6 +27,16 @@ projects.
 
 [`no_std`]: https://doc.rust-lang.org/book/no-stdlib.html
 
+## Release notes
+
+### Version 1.0.1
+
+* Improved documentation
+
+### Version 1.0.0
+
+* Initial release
+
 ## License
 
 Licensed under the Apache License, Version 2.0 or the MIT license, at your
