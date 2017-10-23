@@ -25,7 +25,7 @@ its contents, rather than their value:
 This crate does not depend on libstd, so it can be used in [`no_std`]
 projects.
 
-[`no_std`]: https://doc.rust-lang.org/book/no-stdlib.html
+[`no_std`]: https://doc.rust-lang.org/book/first-edition/using-rust-without-the-standard-library.html
 
 ## Release notes
 

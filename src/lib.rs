@@ -79,7 +79,7 @@
 //!
 //! This crate does not depend on libstd, so it can be used in [`no_std`] projects.
 //!
-//! [`no_std`]: https://doc.rust-lang.org/book/no-stdlib.html
+//! [`no_std`]: https://doc.rust-lang.org/book/first-edition/using-rust-without-the-standard-library.html
 //! [ByAddress]: struct.ByAddress.html
 
 // Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
