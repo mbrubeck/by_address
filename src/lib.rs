@@ -77,6 +77,9 @@
 //!            hash(ByAddress(&v[0..2]))); // Uh-oh!
 //! ```
 //!
+//! This crate does not depend on libstd, so it can be used in [`no_std`] projects.
+//!
+//! [`no_std`]: https://doc.rust-lang.org/book/no-stdlib.html
 //! [ByAddress]: struct.ByAddress.html
 
 // Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or

@@ -22,7 +22,7 @@ its contents, rather than their value:
 
 ## no_std
 
-This crate does not depend on libstd, so it can be used in [`no_std`][3]
+This crate does not depend on libstd, so it can be used in [`no_std`]
 projects.
 
 [`no_std`]: https://doc.rust-lang.org/book/no-stdlib.html
