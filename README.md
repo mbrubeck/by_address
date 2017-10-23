@@ -11,7 +11,7 @@ rather than value.
 
 `ByAddress` can be used to wrap any pointer type (i.e. any type that implements the Deref
 trait).  This includes references, raw pointers, smart pointers like `Rc<T>`
-and `Box<T>`, and specialized pointer-like type like `Vec<T>` and `String`.
+and `Box<T>`, and specialized pointer-like types such as `Vec<T>` and `String`.
 
 The wrapped pointer implements the following traits based on the address of
 its contents, rather than their value:
