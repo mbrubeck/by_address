@@ -29,6 +29,10 @@ projects.
 
 ## Release notes
 
+### Version 1.0.2
+
+* More documentation fixes
+
 ### Version 1.0.1
 
 * Improved documentation
