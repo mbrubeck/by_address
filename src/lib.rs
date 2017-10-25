@@ -59,7 +59,8 @@
 //!
 //! However, due to limitations of safe Rust, hashing takes only the data address into account.
 //! **This may cause performance problems if you use slices as keys in a by-address HashMap or
-//! HashSet.**  It won't cause correctness bugs, but it may cause a high rate of hash collisions.
+//! HashSet.**  It won't cause correctness bugs, but it may cause a high rate of hash collisions if
+//! the keys include many slices with the same starting points but different lengths.
 //!
 //! ```
 //! # use by_address::ByAddress;
