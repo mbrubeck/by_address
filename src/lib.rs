@@ -157,3 +157,7 @@ impl<T, U> AsRef<U> for ByAddress<T> where T: ?Sized + Deref + AsRef<U> {
 impl<T, U> AsMut<U> for ByAddress<T> where T: ?Sized + Deref + AsMut<U> {
     fn as_mut(&mut self) -> &mut U { self.0.as_mut() }
 }
+
+impl<T> From<T> for ByAddress<T> where T: Deref {
+    fn from(t: T) -> ByAddress<T> { ByAddress(t) }
+}
