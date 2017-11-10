@@ -29,6 +29,11 @@ projects.
 
 ## Release notes
 
+### Version 1.0.3
+
+* Implement `From<T>` for `ByAddress<T>`
+* More documentation fixes
+
 ### Version 1.0.2
 
 * More documentation fixes
