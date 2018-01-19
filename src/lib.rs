@@ -57,27 +57,6 @@
 //! assert_ne!(ByAddress(&v[0..4]), ByAddress(&v[0..2])); // Same address, different length.
 //! ```
 //!
-//! However, due to limitations of safe Rust, hashing takes only the data address into account.
-//! **This may cause performance problems if you use slices as keys in a by-address HashMap or
-//! HashSet.**  It won't cause correctness bugs, but it may cause a high rate of hash collisions if
-//! the keys include many slices with the same starting points but different lengths.
-//!
-//! ```
-//! # use by_address::ByAddress;
-//! # use std::collections::hash_map::DefaultHasher;
-//! # use std::hash::{Hash, Hasher};
-//! #
-//! fn hash<T: Hash>(t: T) -> u64 {
-//!     let mut s = DefaultHasher::new();
-//!     t.hash(&mut s);
-//!     s.finish()
-//! }
-//!
-//! let v = [1, 2, 3, 4];
-//! assert_eq!(hash(ByAddress(&v[0..4])),
-//!            hash(ByAddress(&v[0..2]))); // Uh-oh!
-//! ```
-//!
 //! This crate does not depend on libstd, so it can be used in [`no_std`] projects.
 //!
 //! [`no_std`]: https://doc.rust-lang.org/book/first-edition/using-rust-without-the-standard-library.html
@@ -132,9 +111,7 @@ impl<T> PartialOrd for ByAddress<T> where T: ?Sized + Deref {
 /// Raw pointer hashing
 impl<T> Hash for ByAddress<T> where T: ?Sized + Deref {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        // FIXME: For fat pointers to dynamically-sized types, this discards the extra data (vtable
-        // pointer or length), so it may have a high collision rate in certain cases.
-        (self.addr() as *const ()).hash(state)
+        self.addr().hash(state)
     }
 }
 

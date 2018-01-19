@@ -1,6 +1,6 @@
 [package]
 name = "by_address"
-version = "1.0.3"
+version = "1.0.4"
 authors = ["Matt Brubeck <mbrubeck@limpet.net>"]
 license = "MIT / Apache-2.0"
 description = "Wrapper for comparing and hashing pointers by address"
