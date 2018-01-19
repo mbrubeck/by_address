@@ -29,6 +29,10 @@ projects.
 
 ## Release notes
 
+### Version 1.0.4
+
+* Improve hashing of fat pointers
+
 ### Version 1.0.3
 
 * Implement `From<T>` for `ByAddress<T>`
