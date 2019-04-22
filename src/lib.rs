@@ -118,12 +118,12 @@ impl<T> Hash for ByAddress<T> where T: ?Sized + Deref {
 // Generic conversion traits:
 
 impl<T> Deref for ByAddress<T> where T: ?Sized + Deref {
-    type Target = T;
+    type Target = T::Target;
 
     fn deref(&self) -> &Self::Target { &self.0 }
 }
 
-impl<T> DerefMut for ByAddress<T> where T: ?Sized + Deref {
+impl<T> DerefMut for ByAddress<T> where T: ?Sized + DerefMut {
     fn deref_mut(&mut self) -> &mut Self::Target { &mut self.0 }
 }
 

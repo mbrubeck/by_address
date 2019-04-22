@@ -29,6 +29,10 @@ projects.
 
 ## Release notes
 
+### Version 2.0.0
+
+* Change `impl Deref as ByAddress<T>` to deref to `T::Target` instead of `T`.
+
 ### Version 1.0.4
 
 * Improve hashing of fat pointers
