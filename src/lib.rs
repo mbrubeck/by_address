@@ -78,7 +78,7 @@
 
 use core::cmp::Ordering;
 use core::convert::AsRef;
-use core::fmt::{Debug, Formatter};
+use core::fmt::{Debug, Display, Formatter};
 use core::hash::{Hash, Hasher};
 use core::ops::{Deref, DerefMut};
 
@@ -103,9 +103,14 @@ where
     }
 }
 
-struct DebugAdapter<'a, T>(&'a T) where T: ?Sized + Deref + Debug;
+struct DebugAdapter<'a, T>(&'a T)
+where
+    T: ?Sized + Deref + Debug;
 
-impl<'a, T> Debug for DebugAdapter<'a, T> where T: ?Sized + Deref + Debug {
+impl<'a, T> Debug for DebugAdapter<'a, T>
+where
+    T: ?Sized + Deref + Debug,
+{
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         self.0.fmt(f)?;
         f.write_str(" @ ")?;
@@ -114,11 +119,23 @@ impl<'a, T> Debug for DebugAdapter<'a, T> where T: ?Sized + Deref + Debug {
     }
 }
 
-impl<T> Debug for ByAddress<T> where T: ?Sized + Deref + Debug {
+impl<T> Debug for ByAddress<T>
+where
+    T: ?Sized + Deref + Debug,
+{
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.debug_tuple("ByAddress")
             .field(&DebugAdapter(&self.0))
             .finish()
+    }
+}
+
+impl<T> Display for ByAddress<T>
+where
+    T: ?Sized + Deref + Display,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        self.0.fmt(f)
     }
 }
 
@@ -228,11 +245,23 @@ where
     }
 }
 
-impl<T> Debug for ByThinAddress<T> where T: ?Sized + Deref + Debug {
+impl<T> Debug for ByThinAddress<T>
+where
+    T: ?Sized + Deref + Debug,
+{
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.debug_tuple("ByThinAddress")
             .field(&DebugAdapter(&self.0))
             .finish()
+    }
+}
+
+impl<T> Display for ByThinAddress<T>
+where
+    T: ?Sized + Deref + Display,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        self.0.fmt(f)
     }
 }
 
