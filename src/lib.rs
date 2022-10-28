@@ -36,7 +36,7 @@
 //! assert_eq!(ByAddress(&v[0..4]), ByAddress(&v[0..4])); // Same address and length.
 //! assert_ne!(ByAddress(&v[0..4]), ByAddress(&v[0..2])); // Same address, different length.
 //! ```
-//! 
+//!
 //! You can use [`ByThinAddress`] instead if you want to compare slices by starting address only,
 //! or trait objects by data pointer only.
 //!
@@ -59,7 +59,7 @@
 //!     }
 //! }
 //! ```
-//! 
+//!
 //! However, note that comparing fat pointers to trait objects can be unreliable because of
 //! [Rust issue #46139](https://github.com/rust-lang/rust/issues/46139).  In some cases,
 //! [`ByThinAddress`] may be more useful.
