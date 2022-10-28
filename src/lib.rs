@@ -1,6 +1,6 @@
 //! Wrapper type for by-address hashing and comparison.
 //!
-//! [ByAddress] can be used to wrap any pointer type (i.e. any type that implements the Deref
+//! [`ByAddress`] can be used to wrap any pointer type (i.e. any type that implements the Deref
 //! trait).  This includes references, raw pointers, smart pointers like `Rc<T>` and `Box<T>`, and
 //! specialized pointer-like types such as `Vec<T>` and `String`.
 //!
@@ -24,6 +24,22 @@
 //! assert_ne!(x, z);
 //! ```
 //!
+//! If `T` is a pointer to an unsized type, then comparison of `ByAddress<T>` uses the
+//! entire fat pointer, not just the "thin" data address.  This means that two slice pointers
+//! are consider equal only if they have the same starting address *and* length.
+//!
+//! ```
+//! # use by_address::ByAddress;
+//! #
+//! let v = [1, 2, 3, 4];
+//!
+//! assert_eq!(ByAddress(&v[0..4]), ByAddress(&v[0..4])); // Same address and length.
+//! assert_ne!(ByAddress(&v[0..4]), ByAddress(&v[0..2])); // Same address, different length.
+//! ```
+//! 
+//! You can use [`ByThinAddress`] instead if you want to compare slices by starting address only,
+//! or trait objects by data pointer only.
+//!
 //! You can use wrapped pointers as keys in hashed or ordered collections, like BTreeMap/BTreeSet
 //! or HashMap/HashSet, even if the target of the pointer doesn't implement hashing or ordering.
 //! This even includes pointers to trait objects, which usually don't implement the Eq trait
@@ -43,24 +59,14 @@
 //!     }
 //! }
 //! ```
-//!
-//! If `T` is a pointer to an unsized type, then comparison and ordering of `ByAddress<T>` compare
-//! the entire fat pointer, not just the "thin" data address.  This means that two slice pointers
-//! are consider equal only if they have the same starting address *and* length.
-//!
-//! ```
-//! # use by_address::ByAddress;
-//! #
-//! let v = [1, 2, 3, 4];
-//!
-//! assert_eq!(ByAddress(&v[0..4]), ByAddress(&v[0..4])); // Same address and length.
-//! assert_ne!(ByAddress(&v[0..4]), ByAddress(&v[0..2])); // Same address, different length.
-//! ```
+//! 
+//! However, note that comparing fat pointers to trait objects can be unreliable because of
+//! [Rust issue #46139](https://github.com/rust-lang/rust/issues/46139).  In some cases,
+//! [`ByThinAddress`] may be more useful.
 //!
 //! This crate does not depend on libstd, so it can be used in [`no_std`] projects.
 //!
 //! [`no_std`]: https://doc.rust-lang.org/book/first-edition/using-rust-without-the-standard-library.html
-//! [ByAddress]: struct.ByAddress.html
 
 // Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
 // http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
