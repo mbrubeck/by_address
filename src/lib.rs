@@ -72,18 +72,38 @@
 
 use core::cmp::Ordering;
 use core::convert::AsRef;
+use core::fmt::{Debug, Formatter};
 use core::hash::{Hash, Hasher};
 use core::ops::{Deref, DerefMut};
 
 /// Wrapper for pointer types that implements by-address comparison.
 ///
 /// See the [crate-level documentation](index.html) for details.
-#[derive(Copy, Clone, Debug, Default)]
+#[derive(Copy, Clone, Default)]
 pub struct ByAddress<T>(pub T) where T: ?Sized + Deref;
 
 impl<T> ByAddress<T> where T: ?Sized + Deref {
     /// Convenience method for pointer casts.
     fn addr(&self) -> *const T::Target { &*self.0 }
+}
+
+struct DebugAdapter<'a, T>(&'a T) where T: ?Sized + Deref + Debug;
+
+impl<'a, T> Debug for DebugAdapter<'a, T> where T: ?Sized + Deref + Debug {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        self.0.fmt(f)?;
+        f.write_str(" @ ")?;
+        (self.0.deref() as *const T::Target).fmt(f)?;
+        Ok(())
+    }
+}
+
+impl<T> Debug for ByAddress<T> where T: ?Sized + Deref + Debug {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        f.debug_tuple("ByAddress")
+            .field(&DebugAdapter(&self.0))
+            .finish()
+    }
 }
 
 /// Raw pointer equality
