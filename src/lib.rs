@@ -230,7 +230,7 @@ where
 
 impl<T> Debug for ByThinAddress<T> where T: ?Sized + Deref + Debug {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
-        f.debug_tuple("ByAddress")
+        f.debug_tuple("ByThinAddress")
             .field(&DebugAdapter(&self.0))
             .finish()
     }
@@ -311,6 +311,7 @@ where
 #[cfg(test)]
 mod tests {
     extern crate std;
+    use std::format;
 
     use crate::{ByAddress, ByThinAddress};
 
@@ -331,7 +332,6 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn test_thin_ptr_fail() {
         let t = Test {};
         let tr1: &dyn A = &t;
@@ -340,7 +340,7 @@ mod tests {
         let a = ByAddress(tr1);
         let b = ByAddress(tr2);
 
-        assert_eq!(a, b);
+        assert_ne!(a, b);
     }
 
     #[test]
@@ -353,5 +353,19 @@ mod tests {
         let b = ByThinAddress(tr2);
 
         assert_eq!(a, b);
+    }
+
+    #[test]
+    fn test_debug() {
+        let x = &1;
+        let b = ByAddress(x);
+        let expected = format!("ByAddress(1 @ {:p})", x);
+        let actual = format!("{:?}", b);
+        assert_eq!(expected, actual);
+
+        let t = ByThinAddress(x);
+        let expected = format!("ByThinAddress(1 @ {:p})", x);
+        let actual = format!("{:?}", t);
+        assert_eq!(expected, actual);
     }
 }
