@@ -186,7 +186,7 @@ impl<T> Deref for ByAddress<T>
 where
     T: ?Sized + Deref,
 {
-    type Target = T::Target;
+    type Target = T;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -195,7 +195,7 @@ where
 
 impl<T> DerefMut for ByAddress<T>
 where
-    T: ?Sized + DerefMut,
+    T: ?Sized + Deref,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
@@ -312,7 +312,7 @@ impl<T> Deref for ByThinAddress<T>
 where
     T: ?Sized + Deref,
 {
-    type Target = T::Target;
+    type Target = T;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -321,7 +321,7 @@ where
 
 impl<T> DerefMut for ByThinAddress<T>
 where
-    T: ?Sized + DerefMut,
+    T: ?Sized + Deref,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0

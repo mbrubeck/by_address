@@ -29,15 +29,11 @@ projects.
 
 ## Release notes
 
-### Version 2.1.0
+### Version 1.1.0
 
 * New `ByThinAddress` type.
 * Implement the `Display` trait.
 * Custom implementation of `Debug` that includess the pointer address.
-
-### Version 2.0.0
-
-* Change `impl Deref as ByAddress<T>` to deref to `T::Target` instead of `T`.
 
 ### Version 1.0.4
 
