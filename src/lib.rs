@@ -79,12 +79,22 @@ use core::ops::{Deref, DerefMut};
 /// Wrapper for pointer types that implements by-address comparison.
 ///
 /// See the [crate-level documentation](index.html) for details.
+///
+/// Note that equality tests and hashes on fat pointers (`&dyn Trait`, `&[T]`, `&str`, etc)
+/// include the attribute of the fat pointer. If this is not desired, use [`ByThinAddress`].
 #[derive(Copy, Clone, Default)]
-pub struct ByAddress<T>(pub T) where T: ?Sized + Deref;
+pub struct ByAddress<T>(pub T)
+where
+    T: ?Sized + Deref;
 
-impl<T> ByAddress<T> where T: ?Sized + Deref {
+impl<T> ByAddress<T>
+where
+    T: ?Sized + Deref,
+{
     /// Convenience method for pointer casts.
-    fn addr(&self) -> *const T::Target { &*self.0 }
+    fn addr(&self) -> *const T::Target {
+        &*self.0
+    }
 }
 
 struct DebugAdapter<'a, T>(&'a T) where T: ?Sized + Deref + Debug;
@@ -107,7 +117,10 @@ impl<T> Debug for ByAddress<T> where T: ?Sized + Deref + Debug {
 }
 
 /// Raw pointer equality
-impl<T> PartialEq for ByAddress<T> where T: ?Sized + Deref {
+impl<T> PartialEq for ByAddress<T>
+where
+    T: ?Sized + Deref,
+{
     fn eq(&self, other: &Self) -> bool {
         self.addr() == other.addr()
     }
@@ -115,21 +128,30 @@ impl<T> PartialEq for ByAddress<T> where T: ?Sized + Deref {
 impl<T> Eq for ByAddress<T> where T: ?Sized + Deref {}
 
 /// Raw pointer ordering
-impl<T> Ord for ByAddress<T> where T: ?Sized + Deref {
+impl<T> Ord for ByAddress<T>
+where
+    T: ?Sized + Deref,
+{
     fn cmp(&self, other: &Self) -> Ordering {
         self.addr().cmp(&other.addr())
     }
 }
 
 /// Raw pointer comparison
-impl<T> PartialOrd for ByAddress<T> where T: ?Sized + Deref {
+impl<T> PartialOrd for ByAddress<T>
+where
+    T: ?Sized + Deref,
+{
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.addr().cmp(&other.addr()))
     }
 }
 
 /// Raw pointer hashing
-impl<T> Hash for ByAddress<T> where T: ?Sized + Deref {
+impl<T> Hash for ByAddress<T>
+where
+    T: ?Sized + Deref,
+{
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.addr().hash(state)
     }
@@ -137,24 +159,193 @@ impl<T> Hash for ByAddress<T> where T: ?Sized + Deref {
 
 // Generic conversion traits:
 
-impl<T> Deref for ByAddress<T> where T: ?Sized + Deref {
+impl<T> Deref for ByAddress<T>
+where
+    T: ?Sized + Deref,
+{
     type Target = T::Target;
 
-    fn deref(&self) -> &Self::Target { &self.0 }
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
 
-impl<T> DerefMut for ByAddress<T> where T: ?Sized + DerefMut {
-    fn deref_mut(&mut self) -> &mut Self::Target { &mut self.0 }
+impl<T> DerefMut for ByAddress<T>
+where
+    T: ?Sized + DerefMut,
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
 }
 
-impl<T, U> AsRef<U> for ByAddress<T> where T: ?Sized + Deref + AsRef<U> {
-    fn as_ref(&self) -> &U { self.0.as_ref() }
+impl<T, U> AsRef<U> for ByAddress<T>
+where
+    T: ?Sized + Deref + AsRef<U>,
+{
+    fn as_ref(&self) -> &U {
+        self.0.as_ref()
+    }
 }
 
-impl<T, U> AsMut<U> for ByAddress<T> where T: ?Sized + Deref + AsMut<U> {
-    fn as_mut(&mut self) -> &mut U { self.0.as_mut() }
+impl<T, U> AsMut<U> for ByAddress<T>
+where
+    T: ?Sized + Deref + AsMut<U>,
+{
+    fn as_mut(&mut self) -> &mut U {
+        self.0.as_mut()
+    }
 }
 
-impl<T> From<T> for ByAddress<T> where T: Deref {
-    fn from(t: T) -> ByAddress<T> { ByAddress(t) }
+impl<T> From<T> for ByAddress<T>
+where
+    T: Deref,
+{
+    fn from(t: T) -> ByAddress<T> {
+        ByAddress(t)
+    }
+}
+
+/// Similar to [`ByAddress`], but omits the attributes of fat pointers.
+#[derive(Copy, Clone, Default)]
+pub struct ByThinAddress<T>(pub T)
+where
+    T: ?Sized + Deref;
+
+impl<T> ByThinAddress<T>
+where
+    T: ?Sized + Deref,
+{
+    /// Convenience method for pointer casts.
+    fn addr(&self) -> *const T::Target {
+        &*self.0
+    }
+}
+
+impl<T> Debug for ByThinAddress<T> where T: ?Sized + Deref + Debug {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        f.debug_tuple("ByAddress")
+            .field(&DebugAdapter(&self.0))
+            .finish()
+    }
+}
+
+/// Raw pointer equality
+impl<T> PartialEq for ByThinAddress<T>
+where
+    T: ?Sized + Deref,
+{
+    fn eq(&self, other: &Self) -> bool {
+        core::ptr::eq(self.addr() as *const (), other.addr() as *const _)
+    }
+}
+impl<T> Eq for ByThinAddress<T> where T: ?Sized + Deref {}
+
+/// Raw pointer ordering
+impl<T> Ord for ByThinAddress<T>
+where
+    T: ?Sized + Deref,
+{
+    fn cmp(&self, other: &Self) -> Ordering {
+        (self.addr() as *const ()).cmp(&(other.addr() as *const ()))
+    }
+}
+
+/// Raw pointer comparison
+impl<T> PartialOrd for ByThinAddress<T>
+where
+    T: ?Sized + Deref,
+{
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some((self.addr() as *const ()).cmp(&(other.addr() as *const ())))
+    }
+}
+
+/// Raw pointer hashing
+impl<T> Hash for ByThinAddress<T>
+where
+    T: ?Sized + Deref,
+{
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        (self.addr() as *const ()).hash(state)
+    }
+}
+
+// Generic conversion traits:
+
+impl<T> Deref for ByThinAddress<T>
+where
+    T: ?Sized + Deref,
+{
+    type Target = T::Target;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<T> DerefMut for ByThinAddress<T>
+where
+    T: ?Sized + DerefMut,
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl<T, U> AsRef<U> for ByThinAddress<T>
+where
+    T: ?Sized + Deref + AsRef<U>,
+{
+    fn as_ref(&self) -> &U {
+        self.0.as_ref()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    extern crate std;
+
+    use crate::{ByAddress, ByThinAddress};
+
+    trait A: std::fmt::Debug {
+        fn test(&self) {}
+    }
+    trait B: A {
+        fn test2(&self) {}
+    }
+
+    #[derive(Debug)]
+    struct Test {}
+    impl A for Test {}
+    impl B for Test {}
+
+    fn force_vtable<O: B>(v: &O) -> &dyn A {
+        v
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_thin_ptr_fail() {
+        let t = Test {};
+        let tr1: &dyn A = &t;
+        let tr2: &dyn A = force_vtable(&t);
+
+        let a = ByAddress(tr1);
+        let b = ByAddress(tr2);
+
+        assert_eq!(a, b);
+    }
+
+    #[test]
+    fn test_thin_ptr_success() {
+        let t = Test {};
+        let tr1: &dyn A = &t;
+        let tr2: &dyn A = force_vtable(&t);
+
+        let a = ByThinAddress(tr1);
+        let b = ByThinAddress(tr2);
+
+        assert_eq!(a, b);
+    }
 }
