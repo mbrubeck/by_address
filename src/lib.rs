@@ -93,6 +93,7 @@ use core::ptr;
 /// However, note that comparing fat pointers to trait objects can be unreliable because of
 /// [Rust issue #46139](https://github.com/rust-lang/rust/issues/46139).  In some cases,
 /// [`ByThinAddress`] may be more useful.
+#[repr(transparent)]
 #[derive(Copy, Clone, Default)]
 pub struct ByAddress<T>(pub T)
 where
@@ -105,6 +106,14 @@ where
     /// Convenience method for pointer casts.
     fn addr(&self) -> *const T::Target {
         &*self.0
+    }
+
+    /// Convert `&T` to `&ByAddress<T>`.
+    pub fn from_ref(r: &T) -> &Self {
+        // SAFETY: `struct ByAddress` is `repr(transparent)`.
+        unsafe {
+            &*(r as *const T as *const Self)
+        }
     }
 }
 
@@ -254,6 +263,14 @@ where
     /// Convenience method for pointer casts.
     fn addr(&self) -> *const T::Target {
         &*self.0
+    }
+
+    /// Convert `&T` to `&ByThinAddress<T>`.
+    pub fn from_ref(r: &T) -> &Self {
+        // SAFETY: `struct ByAddress` is `repr(transparent)`.
+        unsafe {
+            &*(r as *const T as *const Self)
+        }
     }
 }
 

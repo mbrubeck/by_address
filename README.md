@@ -29,6 +29,10 @@ projects.
 
 ## Release notes
 
+### Version 1.2.0
+
+* Add `from_ref` constructor.
+
 ### Version 1.1.2
 
 * Improved documentations.
