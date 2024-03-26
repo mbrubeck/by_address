@@ -29,6 +29,10 @@ projects.
 
 ## Release notes
 
+### Version 1.1.1
+
+* Update to Rust 2021.
+
 ### Version 1.1.0
 
 * New `ByThinAddress` type.
