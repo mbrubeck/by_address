@@ -50,8 +50,8 @@
 //! # use std::collections::HashSet;
 //! #
 //! /// Call each item in `callbacks`, skipping any duplicate references.
-//! fn call_each_once(callbacks: &[&Fn()]) {
-//!     let mut seen: HashSet<ByAddress<&Fn()>> = HashSet::new();
+//! fn call_each_once(callbacks: &[&dyn Fn()]) {
+//!     let mut seen: HashSet<ByAddress<&dyn Fn()>> = HashSet::new();
 //!     for &f in callbacks {
 //!         if seen.insert(ByAddress(f)) {
 //!             f();
@@ -81,6 +81,7 @@ use core::convert::AsRef;
 use core::fmt::{Debug, Display, Formatter};
 use core::hash::{Hash, Hasher};
 use core::ops::{Deref, DerefMut};
+use core::ptr;
 
 /// Wrapper for pointer types that implements by-address comparison.
 ///
@@ -145,7 +146,7 @@ where
     T: ?Sized + Deref,
 {
     fn eq(&self, other: &Self) -> bool {
-        self.addr() == other.addr()
+        ptr::eq(self.addr(), other.addr())
     }
 }
 impl<T> Eq for ByAddress<T> where T: ?Sized + Deref {}
