@@ -29,6 +29,10 @@ projects.
 
 ## Release notes
 
+### Version 1.1.2
+
+* Improved documentations.
+
 ### Version 1.1.1
 
 * Update to Rust 2021.

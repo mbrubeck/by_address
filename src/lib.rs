@@ -87,8 +87,12 @@ use core::ptr;
 ///
 /// See the [crate-level documentation](index.html) for details.
 ///
-/// Note that equality tests and hashes on fat pointers (`&dyn Trait`, `&[T]`, `&str`, etc)
-/// include the attribute of the fat pointer. If this is not desired, use [`ByThinAddress`].
+/// Equality tests and hashes on fat pointers (`&dyn Trait`, `&[T]`, `&str`, etc)
+/// include the attribute of the fat pointer.
+///
+/// However, note that comparing fat pointers to trait objects can be unreliable because of
+/// [Rust issue #46139](https://github.com/rust-lang/rust/issues/46139).  In some cases,
+/// [`ByThinAddress`] may be more useful.
 #[derive(Copy, Clone, Default)]
 pub struct ByAddress<T>(pub T)
 where
@@ -231,6 +235,13 @@ where
 }
 
 /// Similar to [`ByAddress`], but omits the attributes of fat pointers.
+///
+/// This means that two slices with the same starting element but different lengths will be
+/// considered equal.
+///
+/// Two trait objects with the same data pointer but different vtables will also be considered
+/// equal.  (In particular, this may happen for traits that are implemented on zero-sized types,
+/// including `Fn` and other closure traits.)
 #[derive(Copy, Clone, Default)]
 pub struct ByThinAddress<T>(pub T)
 where
