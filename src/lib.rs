@@ -251,6 +251,7 @@ where
 /// Two trait objects with the same data pointer but different vtables will also be considered
 /// equal.  (In particular, this may happen for traits that are implemented on zero-sized types,
 /// including `Fn` and other closure traits.)
+#[repr(transparent)]
 #[derive(Copy, Clone, Default)]
 pub struct ByThinAddress<T>(pub T)
 where

@@ -29,6 +29,10 @@ projects.
 
 ## Release notes
 
+### Version 1.2.1
+
+* Mark `ByThinAddress` as `repr(transparent)`.
+
 ### Version 1.2.0
 
 * Add `from_ref` constructor.
